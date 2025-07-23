@@ -1,3 +1,10 @@
+stages:
+  - validate
+  # - plan
+  # - apply
+  # - destroy
+
+
 variables:
   TF_ROOT: "terraform"
   TF_VERSION: "1.12.0"
@@ -9,6 +16,11 @@ before_script:
   - unzip terraform.zip && mv terraform /usr/local/bin/
   - terraform --version
 
+validate:
+  stage: validate
+  script:
+    - terraform init
+    - terraform validate
 
 # image:
 #   name: registry.gitlab.com/gitlab-org/gitlab-build-images:terraform
