@@ -44,13 +44,15 @@ plan_dev:
     - changes:
         - dev/**
   needs:
-    - validate
+    - validate_dev
   artifacts:
     paths:
       - tfplan
 
 apply_dev:
   stage: apply
+  needs:
+    - plan_dev
   variables:
     TF_ROOT: "dev"
   script:
@@ -80,13 +82,15 @@ plan_staging:
     - changes:
         - staging/**
   needs:
-    - validate
+    - validate_staging
   artifacts:
     paths:
       - tfplan
 
 apply_staging:
   stage: apply
+  needs:
+    - plan_staging
   variables:
     TF_ROOT: "staging"
   script:
@@ -116,13 +120,15 @@ plan_prod:
     - changes:
         - prod/**
   needs:
-    - validate
+    - validate_prod
   artifacts:
     paths:
       - tfplan
 
 apply_prod:
   stage: apply
+  needs:
+    - plan_prod
   variables:
     TF_ROOT: "prod"
   script:
