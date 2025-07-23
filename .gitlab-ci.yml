@@ -1,8 +1,4 @@
-image:
-  name: registry.gitlab.com/gitlab-org/gitlab-build-images:terraform
-  entrypoint:
-    - '/usr/bin/env'
-    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+image: alpine:latest
 
 variables:
   AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
@@ -10,6 +6,9 @@ variables:
   AWS_DEFAULT_REGION: "ap-southeast-1"
 
 before_script:
+  - apk add --no-cache curl unzip
+  - curl -s -o terraform.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+  - unzip terraform.zip && mv terraform /usr/local/bin/
   - terraform --version
   - terraform init
 
