@@ -4,8 +4,8 @@ image:
 
 variables:
   TF_ROOT: ""
-  AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
-  AWS_SECRET_ACCESS_KEY : ${AWS_SECRET_ACCESS_KEY}
+  AWS_ACCESS_KEY: $AWS_ACCESS_KEY
+  AWS_SECRET_ACCESS_KEY : $AWS_SECRET_ACCESS_KEY
   AWS_DEFAULT_REGION: "ap-southeast-1"
 
 cache:
@@ -29,6 +29,7 @@ validate_dev:
   variables:
     TF_ROOT: "dev"
   script:
+    - echo $AWS_ACCESS_KEY
     - terraform validate
   rules:
     - changes:
@@ -47,7 +48,7 @@ plan_dev:
     - validate_dev
   artifacts:
     paths:
-      - tfplan
+      - dev/tfplan
 
 apply_dev:
   stage: apply
