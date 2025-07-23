@@ -138,6 +138,8 @@ destroy_dev:
     TF_ROOT: "dev"
   script:
     - terraform destroy --auto-approve
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   when: manual 
 
 destroy_staging: 
@@ -146,6 +148,8 @@ destroy_staging:
     TF_ROOT: "staging"
   script:
     - terraform destroy --auto-approve
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   when: manual 
 
 destroy_prod: 
@@ -154,4 +158,6 @@ destroy_prod:
     TF_ROOT: "prod"
   script:
     - terraform destroy --auto-approve
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
   when: manual 
