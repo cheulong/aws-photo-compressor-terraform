@@ -39,7 +39,7 @@ plan:
 
 apply:
   stage: apply
-  when: manual  # to prevent auto-deployment
+  when: manual
   script:
     - terraform init
     - terraform apply -auto-approve tfplan
