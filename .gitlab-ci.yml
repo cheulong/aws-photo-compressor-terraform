@@ -29,7 +29,6 @@ validate_dev:
   variables:
     TF_ROOT: "dev"
   script:
-    - echo $AWS_ACCESS_KEY
     - terraform validate
   rules:
     - changes:
@@ -39,12 +38,9 @@ plan_dev:
   stage: plan
   variables:
     TF_ROOT: "dev"
-    AWS_ACCESS_KEY: $AWS_ACCESS_KEY
-    AWS_SECRET_ACCESS_KEY : $AWS_SECRET_ACCESS_KEY
-    AWS_DEFAULT_REGION: "ap-southeast-1"
   script:
     - echo $AWS_ACCESS_KEY
-    - terraform plan -out=tfplan -var-file="variables.tfvars"
+    - terraform plan -out=tfplan -var-file="terraform.tfvars"
   rules:
     - changes:
         - dev/**
