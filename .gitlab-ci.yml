@@ -21,7 +21,7 @@ before_script:
 stages:
   - validate
   - plan
-  # - apply
+  - apply
   # - destroy
 
 validate_dev:
@@ -41,23 +41,23 @@ plan_dev:
   script:
     - echo $AWS_ACCESS_KEY
     - terraform plan -out=tfplan -var-file="terraform.tfvars"
-  # rules:
-  #   - changes:
-  #       - dev/**
-  # needs:
-  #   - validate_dev
-  # artifacts:
-  #   paths:
-  #     - dev/tfplan
+  rules:
+    - changes:
+        - dev/**
+  needs:
+    - validate_dev
+  artifacts:
+    paths:
+      - dev/tfplan
 
-# apply_dev:
-#   stage: apply
-#   needs:
-#     - plan_dev
-#   variables:
-#     TF_ROOT: "dev"
-#   script:
-#     - terraform apply -auto-approve tfplan
+apply_dev:
+  stage: apply
+  needs:
+    - plan_dev
+  variables:
+    TF_ROOT: "dev"
+  script:
+    - terraform apply -auto-approve tfplan
   # rules:
   #   - if: '$CI_COMMIT_BRANCH == "main"'
   #     changes:
