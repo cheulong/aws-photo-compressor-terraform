@@ -41,9 +41,9 @@ plan_dev:
   script:
     - echo $AWS_ACCESS_KEY
     - terraform plan -out=tfplan -var-file="terraform.tfvars"
-  rules:
-    - changes:
-        - dev/**
+  # rules:
+  #   - changes:
+  #       - dev/**
   needs:
     - validate_dev
   artifacts:
@@ -58,10 +58,10 @@ apply_dev:
     TF_ROOT: "dev"
   script:
     - terraform apply -auto-approve tfplan
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
-        - dev/**
+  # rules:
+  #   - if: '$CI_COMMIT_BRANCH == "main"'
+  #     changes:
+  #       - dev/**
         
 # validate_staging:
 #   stage: validate
