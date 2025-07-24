@@ -15,7 +15,7 @@ variables:
 before_script:
   - terraform --version
   - cd $TF_ROOT
-  - terraform init
+  - terraform init -backend-config="bucket=sfjljw34-terraform-remote-state" -backend-config="key=terraform.tfstate"
 
 
 stages:
