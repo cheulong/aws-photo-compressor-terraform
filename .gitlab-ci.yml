@@ -6,7 +6,6 @@ variables:
   TF_ENV: ""
   AWS_ACCESS_KEY: $AWS_ACCESS_KEY
   AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-  AWS_DEFAULT_REGION: "ap-southeast-1"
 
 cache:
   paths:
