@@ -33,9 +33,9 @@ validate_dev:
   script:
     - echo $CI_COMMIT_SHORT_SHA
     - terraform validate
-  rules:
-    - changes:
-        - dev/**
+  # rules:
+  #   - changes:
+  #       - dev/**
 
 plan_dev:
   stage: plan
@@ -43,9 +43,9 @@ plan_dev:
     TF_ENV: "dev"
   script:
     - terraform plan -out=tfplan -var-file="terraform.tfvars"
-  rules:
-    - changes:
-        - dev/**
+  # rules:
+  #   - changes:
+  #       - dev/**
   needs:
     - validate_dev
   artifacts:
@@ -60,9 +60,9 @@ apply_dev:
     TF_ENV: "dev"
   script:
     - terraform apply -auto-approve tfplan
-  rules:
-    - changes:
-        - dev/**
+  # rules:
+  #   - changes:
+  #       - dev/**
   when: manual
 
 # ===== Staging =====
