@@ -14,9 +14,7 @@ cache:
 before_script:
   - terraform --version
   - cd $TF_ROOT
-  - terraform init -backend-config="key=aws-photo-compressor/$TF_ROOT/terraform.tfstate" \
-    -backend-config="bucket=cheulong-devops-terraform-state-zuqxq2" \
-    -backend-config="region=ap-southeast-1" 
+  - terraform init
 
 stages:
   - validate
@@ -31,9 +29,9 @@ validate_dev:
   script:
     - echo $CI_COMMIT_SHORT_SHA
     - terraform validate
-  rules:
-    - changes:
-        - dev/**
+  # rules:
+  #   - changes:
+  #       - dev/**
 
 plan_dev:
   stage: plan
@@ -41,9 +39,9 @@ plan_dev:
     TF_ROOT: "dev"
   script:
     - terraform plan -out=tfplan -var-file="terraform.tfvars"
-  rules:
-    - changes:
-        - dev/**
+  # rules:
+  #   - changes:
+  #       - dev/**
   needs:
     - validate_dev
   artifacts:
@@ -58,9 +56,9 @@ apply_dev:
     TF_ROOT: "dev"
   script:
     - terraform apply -auto-approve tfplan
-  rules:
-    - changes:
-        - dev/**
+  # rules:
+  #   - changes:
+  #       - dev/**
   when: manual
 
 # ===== Staging =====
