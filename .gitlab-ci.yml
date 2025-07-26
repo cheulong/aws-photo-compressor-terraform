@@ -7,9 +7,9 @@ variables:
   AWS_ACCESS_KEY: $AWS_ACCESS_KEY
   AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
 
-cache:
-  paths:
-    - .terraform
+# cache:
+#   paths:
+#     - .terraform
 
 before_script:
   - terraform --version
