@@ -1,49 +1,48 @@
-image: 
+image:
   name: hashicorp/terraform:1.12.0
   entrypoint: [""]
 
 variables:
   TF_ROOT: ""
   AWS_ACCESS_KEY: $AWS_ACCESS_KEY
-  AWS_SECRET_ACCESS_KEY : $AWS_SECRET_ACCESS_KEY
+  AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
   AWS_DEFAULT_REGION: "ap-southeast-1"
 
-# cache:
-#   paths:
-#     - .terraform
+cache:
+  paths:
+    - .terraform
 
 before_script:
   - terraform --version
   - cd $TF_ROOT
-  - terraform init -backend-config="bucket=sfjljw34-terraform-remote-state" -backend-config="key=terraform.tfstate"
-
+  - terraform init
 
 stages:
   - validate
   - plan
   - apply
-  # - destroy
+  - destroy
 
 validate_dev:
   stage: validate
   variables:
     TF_ROOT: "dev"
   script:
+    - echo $CI_COMMIT_SHORT_SHA
     - terraform validate
-  # rules:
-  #   - changes:
-  #       - dev/**
+  rules:
+    - changes:
+        - dev/**
 
 plan_dev:
   stage: plan
   variables:
     TF_ROOT: "dev"
   script:
-    - echo $AWS_ACCESS_KEY
     - terraform plan -out=tfplan -var-file="terraform.tfvars"
-  # rules:
-  #   - changes:
-  #       - dev/**
+  rules:
+    - changes:
+        - dev/**
   needs:
     - validate_dev
   artifacts:
@@ -58,113 +57,126 @@ apply_dev:
     TF_ROOT: "dev"
   script:
     - terraform apply -auto-approve tfplan
-  # rules:
-  #   - if: '$CI_COMMIT_BRANCH == "main"'
-  #     changes:
-  #       - dev/**
-        
-# validate_staging:
-#   stage: validate
-#   variables:
-#     TF_ROOT: "staging"
-#   script:
-#     - terraform validate
-#   rules:
-#     - changes:
-#         - staging/**
+  rules:
+    - changes:
+        - dev/**
+  when: manual
 
-# plan_staging:
-#   stage: plan
-#   variables:
-#     TF_ROOT: "staging"
-#   script:
-#     - terraform plan -out=tfplan
-#   rules:
-#     - changes:
-#         - staging/**
-#   needs:
-#     - validate_staging
-#   artifacts:
-#     paths:
-#       - tfplan
+# ===== Staging =====
 
-# apply_staging:
-#   stage: apply
-#   needs:
-#     - plan_staging
-#   variables:
-#     TF_ROOT: "staging"
-#   script:
-#     - terraform apply -auto-approve tfplan
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "main"'
-#       changes:
-#         - staging/**
+validate_staging:
+  stage: validate
+  variables:
+    TF_ROOT: "staging"
+  script:
+    - terraform validate
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      changes:
+        - staging/**
 
-# validate_prod:
-#   stage: validate
-#   variables:
-#     TF_ROOT: "prod"
-#   script:
-#     - terraform validate
-#   rules:
-#     - changes:
-#         - prod/**
+plan_staging:
+  stage: plan
+  variables:
+    TF_ROOT: "staging"
+  script:
+    - terraform plan -out=tfplan
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      changes:
+        - staging/**
+  needs:
+    - validate_staging
+  artifacts:
+    paths:
+      - tfplan
 
-# plan_prod:
-#   stage: plan
-#   variables:
-#     TF_ROOT: "prod"
-#   script:
-#     - terraform plan -out=tfplan
-#   rules:
-#     - changes:
-#         - prod/**
-#   needs:
-#     - validate_prod
-#   artifacts:
-#     paths:
-#       - tfplan
+apply_staging:
+  stage: apply
+  needs:
+    - plan_staging
+  variables:
+    TF_ROOT: "staging"
+  script:
+    - terraform apply -auto-approve tfplan
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+      changes:
+        - staging/**
+  when: manual
 
-# apply_prod:
-#   stage: apply
-#   needs:
-#     - plan_prod
-#   variables:
-#     TF_ROOT: "prod"
-#   script:
-#     - terraform apply -auto-approve tfplan
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "main"'
-#       changes:
-#         - prod/**
+# ===== Production =====
 
-# destroy_dev: 
-#   stage: destroy
-#   variables:
-#     TF_ROOT: "dev"
-#   script:
-#     - terraform destroy --auto-approve
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "main"'
-#   when: manual 
+validate_prod:
+  stage: validate
+  variables:
+    TF_ROOT: "prod"
+  script:
+    - terraform validate
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_TAG
+      changes:
+        - prod/**
 
-# destroy_staging: 
-#   stage: destroy
-#   variables:
-#     TF_ROOT: "staging"
-#   script:
-#     - terraform destroy --auto-approve
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "main"'
-#   when: manual 
+plan_prod:
+  stage: plan
+  variables:
+    TF_ROOT: "prod"
+  script:
+    - terraform plan -out=tfplan
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_TAG
+      changes:
+        - prod/**
+  needs:
+    - validate_prod
+  artifacts:
+    paths:
+      - tfplan
 
-# destroy_prod: 
-#   stage: destroy
-#   variables:
-#     TF_ROOT: "prod"
-#   script:
-#     - terraform destroy --auto-approve
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "main"'
-#   when: manual 
+apply_prod:
+  stage: apply
+  needs:
+    - plan_prod
+  variables:
+    TF_ROOT: "prod"
+  script:
+    - terraform apply -auto-approve tfplan
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main'
+    - if: $CI_COMMIT_TAG
+      changes:
+        - prod/**
+  when: manual
+
+# ===== Destroy =====
+
+destroy_dev:
+  stage: destroy
+  variables:
+    TF_ROOT: "dev"
+  script:
+    - terraform destroy --auto-approve
+  when: manual
+
+destroy_staging:
+  stage: destroy
+  variables:
+    TF_ROOT: "staging"
+  script:
+    - terraform destroy --auto-approve
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  when: manual
+
+destroy_prod:
+  stage: destroy
+  variables:
+    TF_ROOT: "prod"
+  script:
+    - terraform destroy --auto-approve
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  when: manual
