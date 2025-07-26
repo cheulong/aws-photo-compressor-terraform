@@ -3,7 +3,7 @@ image:
   entrypoint: [""]
 
 variables:
-  TF_ROOT: ""
+  TF_ENV: ""
   AWS_ACCESS_KEY: $AWS_ACCESS_KEY
   AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
   AWS_DEFAULT_REGION: "ap-southeast-1"
@@ -14,10 +14,11 @@ cache:
 
 before_script:
   - terraform --version
-  - cd $TF_ROOT
-  - terraform init -backend-config="key=aws-photo-compressor/$TF_ROOT/terraform.tfstate" \
-    -backend-config="bucket=cheulong-devops-terraform-state-zuqxq2" \
-    -backend-config="region=ap-southeast-1" 
+  - cd $TF_ENV
+  - terraform init \
+        -backend-config="bucket=cheulong-devops-terraform-state-zuqxq2" \
+        -backend-config="key=aws-photo-compressor/$TF_ENV/terraform.tfstate" \
+        -backend-config="region=ap-southeast-1"
 
 stages:
   - validate
@@ -28,7 +29,7 @@ stages:
 validate_dev:
   stage: validate
   variables:
-    TF_ROOT: "dev"
+    TF_ENV: "dev"
   script:
     - echo $CI_COMMIT_SHORT_SHA
     - terraform validate
@@ -39,7 +40,7 @@ validate_dev:
 plan_dev:
   stage: plan
   variables:
-    TF_ROOT: "dev"
+    TF_ENV: "dev"
   script:
     - terraform plan -out=tfplan -var-file="terraform.tfvars"
   rules:
@@ -56,7 +57,7 @@ apply_dev:
   needs:
     - plan_dev
   variables:
-    TF_ROOT: "dev"
+    TF_ENV: "dev"
   script:
     - terraform apply -auto-approve tfplan
   rules:
@@ -69,7 +70,7 @@ apply_dev:
 validate_staging:
   stage: validate
   variables:
-    TF_ROOT: "staging"
+    TF_ENV: "staging"
   script:
     - terraform validate
   rules:
@@ -80,7 +81,7 @@ validate_staging:
 plan_staging:
   stage: plan
   variables:
-    TF_ROOT: "staging"
+    TF_ENV: "staging"
   script:
     - terraform plan -out=tfplan
   rules:
@@ -98,7 +99,7 @@ apply_staging:
   needs:
     - plan_staging
   variables:
-    TF_ROOT: "staging"
+    TF_ENV: "staging"
   script:
     - terraform apply -auto-approve tfplan
   rules:
@@ -112,7 +113,7 @@ apply_staging:
 validate_prod:
   stage: validate
   variables:
-    TF_ROOT: "prod"
+    TF_ENV: "prod"
   script:
     - terraform validate
   rules:
@@ -123,7 +124,7 @@ validate_prod:
 plan_prod:
   stage: plan
   variables:
-    TF_ROOT: "prod"
+    TF_ENV: "prod"
   script:
     - terraform plan -out=tfplan
   rules:
@@ -141,7 +142,7 @@ apply_prod:
   needs:
     - plan_prod
   variables:
-    TF_ROOT: "prod"
+    TF_ENV: "prod"
   script:
     - terraform apply -auto-approve tfplan
   rules:
@@ -155,7 +156,7 @@ apply_prod:
 destroy_dev:
   stage: destroy
   variables:
-    TF_ROOT: "dev"
+    TF_ENV: "dev"
   script:
     - terraform destroy --auto-approve
   when: manual
@@ -163,7 +164,7 @@ destroy_dev:
 destroy_staging:
   stage: destroy
   variables:
-    TF_ROOT: "staging"
+    TF_ENV: "staging"
   script:
     - terraform destroy --auto-approve
   rules:
@@ -173,7 +174,7 @@ destroy_staging:
 destroy_prod:
   stage: destroy
   variables:
-    TF_ROOT: "prod"
+    TF_ENV: "prod"
   script:
     - terraform destroy --auto-approve
   rules:
