@@ -14,7 +14,6 @@ variables:
 before_script:
   - terraform --version
   - cd $TF_ENV
-  - cd $AWS_ACCESS_KEY
   - terraform init
 
 stages:
