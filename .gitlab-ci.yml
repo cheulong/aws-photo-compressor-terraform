@@ -15,7 +15,9 @@ variables:
 
 before_script:
   - terraform --version
-  - cd $TF_ENV
+  - cd ${TF_ENV}
+  - echo $TF_ENV
+  - echo ${TF_ENV}
   - terraform init
 
 stages:
