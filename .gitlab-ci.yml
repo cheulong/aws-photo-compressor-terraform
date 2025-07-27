@@ -19,8 +19,8 @@ before_script:
 
 stages:
   - validate
-  # - plan
-  # - apply
+  - plan
+  - apply
   # - destroy
 
 validate_dev:
@@ -34,33 +34,33 @@ validate_dev:
   #   - changes:
   #       - dev/**
 
-# plan_dev:
-#   stage: plan
-#   variables:
-#     TF_ROOT: "dev"
-#   script:
-#     - terraform plan -out=tfplan -var-file="terraform.tfvars"
+plan_dev:
+  stage: plan
+  variables:
+    TF_ROOT: "dev"
+  script:
+    - terraform plan -out=tfplan -var-file="terraform.tfvars"
   # rules:
   #   - changes:
   #       - dev/**
-#   needs:
-#     - validate_dev
-#   artifacts:
-#     paths:
-#       - dev/tfplan
+  needs:
+    - validate_dev
+  artifacts:
+    paths:
+      - dev/tfplan
 
-# apply_dev:
-#   stage: apply
-#   needs:
-#     - plan_dev
-#   variables:
-#     TF_ROOT: "dev"
-#   script:
-#     - terraform apply -auto-approve tfplan
+apply_dev:
+  stage: apply
+  needs:
+    - plan_dev
+  variables:
+    TF_ROOT: "dev"
+  script:
+    - terraform apply -auto-approve tfplan
   # rules:
   #   - changes:
   #       - dev/**
-  # when: manual
+  when: manual
 
 # ===== Staging =====
 
