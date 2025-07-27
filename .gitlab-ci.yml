@@ -35,7 +35,6 @@ validate_dev:
     name: dev
   script:
     - echo $CI_COMMIT_SHORT_SHA
-    - aws sts get-caller-identity --region ap-southeast-1
     - terraform --version
     - cd ${TF_ENV}
     - echo $TF_ENV
