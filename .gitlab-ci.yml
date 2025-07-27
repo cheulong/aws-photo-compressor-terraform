@@ -14,7 +14,7 @@ cache:
 before_script:
   - terraform --version
   - cd $TF_ROOT
-  - terraform init
+  - terraform init -backend-config="bucket=cheulong-devops-terraform-state-kljbxs" -backend-config="key=aws-photo-compressor/$TF_ROOT/terraform.tfstate" -backend-config="region=us-east-1"
 
 stages:
   - validate
