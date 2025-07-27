@@ -1,5 +1,5 @@
 image:
-  name: hashicorp/terraform:1.12.0
+  name: hashicorp/terraform:1.12.2
   entrypoint: [""]
 
 variables:
