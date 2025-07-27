@@ -4,27 +4,27 @@ image:
 
 variables:
   TF_ENV: ""
-  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY}
-  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-  AWS_DEFAULT_REGION: "us-east-1"
+  # AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+  # AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+  # AWS_DEFAULT_REGION: "us-east-1"
 
 
 # cache:
 #   paths:
 #     - .terraform
 
-before_script:
-  - terraform --version
-  - cd ${TF_ENV}
-  - echo $TF_ENV
-  - echo ${TF_ENV}
-  - terraform init
+# before_script:
+#   - terraform --version
+#   - cd ${TF_ENV}
+#   - echo $TF_ENV
+#   - echo ${TF_ENV}
+#   - terraform init
 
 stages:
   - validate
-  - plan
-  - apply
-  - destroy
+  # - plan
+  # - apply
+  # - destroy
 
 validate_dev:
   stage: validate
@@ -32,38 +32,43 @@ validate_dev:
     TF_ENV: "dev"
   script:
     - echo $CI_COMMIT_SHORT_SHA
+    - terraform --version
+    - cd ${TF_ENV}
+    - echo $TF_ENV
+    - echo ${TF_ENV}
+    - terraform init
     - terraform validate
   # rules:
   #   - changes:
   #       - dev/**
 
-plan_dev:
-  stage: plan
-  variables:
-    TF_ENV: "dev"
-  script:
-    - terraform plan -out=tfplan -var-file="terraform.tfvars"
+# plan_dev:
+#   stage: plan
+#   variables:
+#     TF_ENV: "dev"
+#   script:
+#     - terraform plan -out=tfplan -var-file="terraform.tfvars"
   # rules:
   #   - changes:
   #       - dev/**
-  needs:
-    - validate_dev
-  artifacts:
-    paths:
-      - dev/tfplan
+  # needs:
+  #   - validate_dev
+  # artifacts:
+  #   paths:
+  #     - dev/tfplan
 
-apply_dev:
-  stage: apply
-  needs:
-    - plan_dev
-  variables:
-    TF_ENV: "dev"
-  script:
-    - terraform apply -auto-approve tfplan
+# apply_dev:
+#   stage: apply
+#   needs:
+#     - plan_dev
+#   variables:
+#     TF_ENV: "dev"
+#   script:
+#     - terraform apply -auto-approve tfplan
   # rules:
   #   - changes:
   #       - dev/**
-  when: manual
+  # when: manual
 
 # ===== Staging =====
 
