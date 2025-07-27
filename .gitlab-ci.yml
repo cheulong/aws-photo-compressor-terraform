@@ -16,7 +16,7 @@ variables:
 before_script:
   - terraform --version
   - cd $TF_ENV
-  - terraform init -backend-config="tfstate.config"
+  - terraform init
 
 stages:
   - validate
