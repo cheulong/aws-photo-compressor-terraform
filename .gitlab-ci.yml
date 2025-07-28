@@ -21,7 +21,7 @@ stages:
   - validate
   - plan
   - apply
-  # - destroy
+  - destroy
 
 validate_dev:
   stage: validate
@@ -114,7 +114,7 @@ validate_prod:
   script:
     - terraform validate
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main' && $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == 'main'
       changes:
         - prod/**
 
@@ -125,7 +125,7 @@ plan_prod:
   script:
     - terraform plan -out=tfplan
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main' && $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == 'main'
       changes:
         - prod/**
   needs:
@@ -143,7 +143,8 @@ apply_prod:
   script:
     - terraform apply -auto-approve tfplan
   rules:
-    - if: $CI_COMMIT_BRANCH == 'main' && $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == 'main'
+    # - if: $CI_COMMIT_BRANCH == 'main' && $CI_COMMIT_TAG
       changes:
         - prod/**
   when: manual
