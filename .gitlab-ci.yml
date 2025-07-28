@@ -89,7 +89,7 @@ plan_staging:
     - validate_staging
   artifacts:
     paths:
-      - tfplan
+      - staging/tfplan
 
 apply_staging:
   stage: apply
@@ -132,7 +132,7 @@ plan_prod:
     - validate_prod
   artifacts:
     paths:
-      - tfplan
+      - prod/tfplan
 
 apply_prod:
   stage: apply
