@@ -7,9 +7,9 @@ variables:
   AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
   AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
 
-cache:
-  paths:
-    - .terraform
+# cache:
+#   paths:
+#     - .terraform
 
 before_script:
   - terraform --version
@@ -30,9 +30,9 @@ validate_dev:
   script:
     - echo $CI_COMMIT_SHORT_SHA
     - terraform validate
-  # rules:
-  #   - changes:
-  #       - dev/**
+  rules:
+    - changes:
+        - dev/**
 
 plan_dev:
   stage: plan
@@ -40,9 +40,9 @@ plan_dev:
     TF_ROOT: "dev"
   script:
     - terraform plan -out=tfplan -var-file="terraform.tfvars"
-  # rules:
-  #   - changes:
-  #       - dev/**
+  rules:
+    - changes:
+        - dev/**
   needs:
     - validate_dev
   artifacts:
@@ -57,9 +57,9 @@ apply_dev:
     TF_ROOT: "dev"
   script:
     - terraform apply -auto-approve tfplan
-  # rules:
-  #   - changes:
-  #       - dev/**
+  rules:
+    - changes:
+        - dev/**
   when: manual
 
 # ===== Staging =====
