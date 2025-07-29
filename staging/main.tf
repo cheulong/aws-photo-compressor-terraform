@@ -1,8 +1,10 @@
-
-
 module "vpc" {
   source      = "../modules/vpc"
   environment = var.environment
   cidr_block  = var.cidr_block
 }
-# Output for VPC ID
+
+module "s3" {
+  source = "../modules/s3"
+  environment = var.environment
+}
