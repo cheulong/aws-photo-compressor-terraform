@@ -34,7 +34,7 @@ validate_dev:
     - echo $CI_COMMIT_SHORT_SHA
     - terraform validate
   rules:
-    - if: $CI_COMMIT_BRANCH != 'main'
+    - if: '$CI_COMMIT_BRANCH != "main"'
       changes:
         - dev/**
     - when: never
@@ -46,7 +46,7 @@ plan_dev:
   script:
     - terraform plan -out=tfplan -var-file="terraform.tfvars"
   rules:
-    - if: $CI_COMMIT_BRANCH != 'main'
+    - if: '$CI_COMMIT_BRANCH != "main"'
       changes:
         - dev/**
     - when: never
@@ -65,7 +65,7 @@ apply_dev:
   script:
     - terraform apply -auto-approve tfplan
   rules:
-    - if: $CI_COMMIT_BRANCH != 'main'
+    - if: '$CI_COMMIT_BRANCH != "main"'
       changes:
         - dev/**
     - when: never
@@ -177,6 +177,8 @@ apply_prod:
 # ===== Changelog =====
 changelog:
   stage: changelog
+  variables:
+    TF_ROOT: "prod"
   script:
     - ls
     - echo "### Terraform Plan Changelog" > CHANGELOG.md
