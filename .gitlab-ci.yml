@@ -37,7 +37,7 @@ validate_dev:
     - if: $CI_COMMIT_BRANCH != 'main'
       changes:
         - dev/**
-    - when: never
+      when: never
 
 plan_dev:
   stage: plan
@@ -49,7 +49,7 @@ plan_dev:
     - if: $CI_COMMIT_BRANCH != 'main'
       changes:
         - dev/**
-    - when: never
+      when: never
   needs:
     - validate_dev
   artifacts:
@@ -68,7 +68,7 @@ apply_dev:
     - if: $CI_COMMIT_BRANCH != 'main'
       changes:
         - dev/**
-    - when: never
+      when: never
   when: manual
 
 # ===== Staging =====
@@ -80,6 +80,9 @@ validate_staging:
   script:
     - terraform validate
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      changes:
+        - staging/**
     - if: $CI_COMMIT_BRANCH == 'main'
       changes:
         - staging/**
@@ -91,6 +94,9 @@ plan_staging:
   script:
     - terraform plan -out=tfplan
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      changes:
+        - staging/**
     - if: $CI_COMMIT_BRANCH == 'main'
       changes:
         - staging/**
@@ -123,6 +129,9 @@ validate_prod:
   script:
     - terraform validate
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      changes:
+        - prod/**
     - if: $CI_COMMIT_BRANCH == 'main'
       changes:
         - prod/**
@@ -135,6 +144,9 @@ plan_prod:
     - terraform plan -out=tfplan
     - terraform show -no-color tfplan > plan.txt
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      changes:
+        - prod/**
     - if: $CI_COMMIT_BRANCH == 'main'
       changes:
         - prod/**
@@ -162,6 +174,27 @@ apply_prod:
         - prod/**
   when: manual
 
+# ===== Changelog =====
+changelog:
+  stage: changelog
+  script:
+    - ls
+    - echo "### Terraform Plan Changelog" > CHANGELOG.md
+    - echo '```hcl' >> CHANGELOG.md
+    - cat plan.txt >> CHANGELOG.md
+    - echo '```' >> CHANGELOG.md
+  needs:
+    - plan_prod
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
+      when: never  # Avoid MR pipelines
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"'
+      when: always
+    - when: never
+  artifacts:
+    paths:
+      - CHANGELOG.md
+    expire_in: 1 week
 # ===== Destroy =====
 
 destroy_dev:
@@ -192,20 +225,3 @@ destroy_prod:
     - if: '$CI_COMMIT_BRANCH == "main"'
   when: manual
 
-# ===== Changelog =====
-changelog:
-  stage: changelog
-  script:
-    - echo "### Terraform Plan Changelog" > CHANGELOG.md
-    - echo '```hcl' >> CHANGELOG.md
-    - cat plan.txt >> CHANGELOG.md
-    - echo '```' >> CHANGELOG.md
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"'
-      when: never  # Avoid MR pipelines
-    - if: '$CI_COMMIT_BRANCH == "main" && $CI_PIPELINE_SOURCE == "push"'
-      when: always
-    - when: never
-  artifacts:
-    paths:
-      - CHANGELOG.md
