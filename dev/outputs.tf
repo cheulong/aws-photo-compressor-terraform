@@ -5,3 +5,7 @@ output "vpc_id" {
 output "s3_id" {
   value = module.s3.s3_id
 }
+
+output "dynamodb_id" {
+  value = module.dynamodb.dynamodb_id
+}
