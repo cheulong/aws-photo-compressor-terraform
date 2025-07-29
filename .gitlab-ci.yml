@@ -37,7 +37,7 @@ validate_dev:
     - if: $CI_COMMIT_BRANCH != 'main'
       changes:
         - dev/**
-    - when: never
+      when: never
 
 plan_dev:
   stage: plan
@@ -49,7 +49,7 @@ plan_dev:
     - if: $CI_COMMIT_BRANCH != 'main'
       changes:
         - dev/**
-    - when: never
+      when: never
   needs:
     - validate_dev
   artifacts:
@@ -68,7 +68,7 @@ apply_dev:
     - if: $CI_COMMIT_BRANCH != 'main'
       changes:
         - dev/**
-    - when: never
+      when: never
   when: manual
 
 # ===== Staging =====
