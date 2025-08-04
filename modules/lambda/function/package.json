@@ -1,0 +1,12 @@
+{
+    "name": "photo_compressor",
+    "type": "module",
+    "description": "This package will be treated as an ES module.",
+    "version": "1.0",
+    "main": "index.js",
+    "author": "Your Name",
+    "license": "ISC",
+    "dependencies": {
+        "image-resize-compress": "^2.1.1"
+    }
+}
