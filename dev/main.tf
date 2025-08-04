@@ -19,3 +19,7 @@ module "lambda" {
   environment = var.environment
 }
 
+module "amplify_app" {
+  source = "../modules/amplify"
+  environment = var.environment
+}
